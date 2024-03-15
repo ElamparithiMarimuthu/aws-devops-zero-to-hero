@@ -2,18 +2,21 @@ version: 0.2
 
 env:
   variables:
-  dockerhub_username = "elampari"
+    dockerhub_username: "elampari"
   parameter-store:
-    docker_password = myapp/docker-password
+    docker_password: "/myapp/docker-credentials/password"
+
 phases:
   install:
     runtime-versions:
       python: 3.11
+
   pre_build:
     commands:
       - echo "Installing dependencies..."
       - pip install -r day-13/simple-python-app/requirements.txt
-      - docker login -u ${dockerhub_username} -p ${docker_password}
+      - docker login -u $dockerhub_username -p "$(aws ssm get-parameter --name $docker_password --with-decryption --query 'Parameter.Value' --output text)"
+
   build:
     commands:
       - echo "Running tests..."
@@ -26,8 +29,8 @@ phases:
     commands:
       - docker push elampari/pythonflask:simple-python-app
       - echo "Build completed successfully!"
+
 artifacts:
   files:
     - '**/*'
   base-directory: ../simple-python-app
-
