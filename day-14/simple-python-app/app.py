@@ -7,5 +7,5 @@ def hello():
     return " aws cicd sevices sucessfully implemented "
 
 if __name__ == '__main__':
-    app.run()
+    app.run() 
 
